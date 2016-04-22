@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
    <meta charset="utf-8">
-   <title>Heatmap</title>
+   <title>Data Visualization - 2nd Exercise / Part 2</title>
 </head>
 
 <body>
+
+<H1 style="text-align:center;">Data Visualization - 2nd Exercise / Part 2</H1>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
    <script src="https://code.highcharts.com/highcharts.js"></script>
    <script src="https://code.highcharts.com/modules/heatmap.js"></script>
@@ -24,21 +26,19 @@
                   plotBorderWidth: 1
             },
             title: {
-               text: 'Arrecadacao anual de cada genero de filme no periodo de 2007-2011'
+               text: 'Worldwide total gross (in millions) by year for each movie genre released in the period of 2007-2011'
             },
             xAxis: {
                title:{
-                  text: 'Anos'
+                  text: 'Years'
                },
                categories: ['2007', '2008', '2009', '2010','2011']
             },
             yAxis: {
                title: {
-                  text: 'Categorias'
+                  text: 'Movie Genres'
                },
-               categories: ['Action','Comedy','Animation','Drama','Adventure','Thriller','Horror',
-                     'Romance','Fantasy','Biography','Crime','Mystery','Documentary','Musical',
-                     'Western','Sci-Fi','Biopic']
+               categories: ['Biopic','Sci-Fi','Western','Musical','Documentary','Mystery','Crime','Biography','Fantasy','Romance','Horror','Thriller','Adventure','Drama','Animation','Comedy','Action']
             },
             series: [],
               colorAxis: {
@@ -66,7 +66,8 @@
          $.get('movies.csv', function(data) {
 
             var parsedData = $.csv.toArrays(data);
-            var genre = ['Drama','Biography','Animation','Crime','Comedy','Thriller','Adventure','Romance'];
+            var genre = ['Biopic','Sci-Fi','Western','Musical','Documentary','Mystery','Crime','Biography','Fantasy','Romance','Horror','Thriller','Adventure','Drama','Animation','Comedy','Action'];
+            // var genre = ['Drama','Biography','Animation','Crime','Comedy','Thriller','Adventure','Romance'];
             var years=[2007, 2008, 2009, 2010, 2011];
 
             var series = { 
@@ -106,9 +107,122 @@
       });
 
    </script>
-   <div id="container" style="height: 800px; min-width: 310px; max-width: 800px; margin: 0 auto"></div>
 
+   <script type="text/javascript">
+      $(function () {
+         var example = 'column-stacked', 
+         theme = 'default';
+
+         var options = {
+            chart: {
+               renderTo: 'container2',
+                  type: 'column'
+              },
+              title: {
+                  text: 'Amount of Oscars given by Film Genre in the period of 2007-2001'
+              },
+              xAxis: {
+                  categories: ['2007', '2008', '2009', '2010', '2011']
+              },
+            yAxis: {
+               min: 0,
+                  title: {
+                      text: 'Amount of Oscars Given'
+                  },
+                  stackLabels: {
+                      enabled: true,
+                      style: {
+                          fontWeight: 'bold',
+                          color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                      }
+                  }
+            },     
+              legend: {
+                  align: 'right',
+                  x: -30,
+                  verticalAlign: 'top',
+                  y: 25,
+                  floating: true,
+                  backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+                  borderColor: '#CCC',
+                  borderWidth: 1,
+                  shadow: false
+              },
+            tooltip: {
+                headerFormat: '<b>{point.x}</b><br/>',
+               pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+            },
+              plotOptions: {
+                  column: {
+                      stacking: 'normal',
+                      dataLabels: {
+                          enabled: true,
+                          color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                          style: {
+                              textShadow: '0 0 3px black'
+                          }
+                      }
+                  }
+              },
+              series: [],
+         };
+
+         $.get('movies.csv', function(data) {
+
+            var parsedData = $.csv.toArrays(data);
+            var genre = ['Drama', 'Biography', 'Animation', 'Crime', 'Comedy', 'Thriller',
+                     'Adventure','Romance'];
+            var years=[2007, 2008, 2009, 2010, 2011];
+            var series = [];
+
+            for (var j = 0; j < genre.length; j++) {
+               var temp = {
+                  name:null,
+                  data:[]
+               };
+               temp.name = String(genre[j]);
+               for (var i = 0; i < years.length; i++) {
+                  var sum =0;
+                  for (var d = parsedData.length - 1; d >= 0; d--) {
+                     if (parsedData[d][8]==String(genre[j]) && parsedData[d][11]==parseFloat(years[i])){
+                        if (parsedData[d][22]){
+                           sum += parseFloat(parsedData[d][0]);
+                        }
+                     }
+                  }
+                  temp.data.push(sum);
+               }
+               options.series.push({name:temp.name, data: temp.data});
+            }
+            var chart = new Highcharts.Chart(options);
+         });
+      });
+   </script>
    
+   <div style="width:100%;">
+      <div style="width:40%;float:left;"></div>
+      <div id="container" style="float:left; width:900px; height: 400px; min-width: 800px; max-width: 900px; margin: 0 auto"></div>
+      <div style="float:left; width:30%;margin-left:30px;">
+         <p>
+            The heatmap presented show us that the films with biggest income in the <a. href="movies.csv">studied dataset</a.> were of the genres Action, Comedy and Animation. This plot was my first attempt using the Highcharts library. It is really practical to use <strong>after</strong> you have done all of the pre-processing required in order to input the data in the specific way the library needs. I would say this step was, definitely, the most time consuming one when. In other hand, while using Tableau, data filtering is done in such high level way that the user does tend to forget that this is a important problem when not using a tool capable of it. Other modifications in the plot that I would have made, but could not find out how to:
+            <ul>
+               <li>Remove the labels for each cell of the heatmap</li>
+               <li>Adjust the color of each cell border</li>
+            </ul>
+         </p>
+      </div>
+   </div>
+   
+   <div style="clear: both;width:100%;">
+      <div style="width:40%;float:left;"></div>
+      <div style="float:left;width:30%;margin-right:30px;">
+         <p>
+            The following stacked barchart show us the distribution of Oscars given by movie genre in the same already cited dataset. Curiously, even tough Action, Comedy and Animation movies generate higher income than Drama, it is, actually, the genre which more Oscars are usually given to (with exception of the year of 2008 when <a href="http://www.imdb.com/title/tt1010048/">Slumdog Millionaire</a> won alone 3 Oscars). The experience of dealing with Highcharts with this plot was not very different from the first one. The pre-processing step required to filter the data and format it in the right way was very time consuming. Since both plots presented in this page are very well known, I did not had to made design changes neither in Tableau or Highcharts version (excluding some details like cell border color, text font and hiding labels).
+         </p>
+      </div>
+      <div id="container2" style="float:left; width:40%; height: 500px; min-width: 310px; max-width: 800px; margin: 0 auto"></div>
+   </div>
+
 </body>
 </html>
 
