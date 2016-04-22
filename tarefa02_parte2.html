@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8">
+   <title>Heatmap</title>
+</head>
+
+<body>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+   <script src="https://code.highcharts.com/highcharts.js"></script>
+   <script src="https://code.highcharts.com/modules/heatmap.js"></script>
+   <script src="https://code.highcharts.com/modules/exporting.js"></script>
+   <script src="http://code.highcharts.com/modules/data.js"></script>
+   <script src="http://jquery-csv.googlecode.com/git/src/jquery.csv.js"></script>
+   <script type="text/javascript">
+      $(function () {
+
+         var options = {
+            chart: {
+               renderTo: 'container',
+                  type: 'heatmap',
+                  marginTop: 40,
+                  marginBottom: 80,
+                  plotBorderWidth: 1
+            },
+            title: {
+               text: 'Arrecadacao anual de cada genero de filme no periodo de 2007-2011'
+            },
+            xAxis: {
+               title:{
+                  text: 'Anos'
+               },
+               categories: ['2007', '2008', '2009', '2010','2011']
+            },
+            yAxis: {
+               title: {
+                  text: 'Categorias'
+               },
+               categories: ['Action','Comedy','Animation','Drama','Adventure','Thriller','Horror',
+                     'Romance','Fantasy','Biography','Crime','Mystery','Documentary','Musical',
+                     'Western','Sci-Fi','Biopic']
+            },
+            series: [],
+              colorAxis: {
+               min: 0,
+               minColor: '#FFFFFF',
+               maxColor: Highcharts.getOptions().colors[0]
+            },
+              legend: {
+                  align: 'right',
+                  layout: 'vertical',
+                  margin: 0,
+                  verticalAlign: 'top',
+                  y: 25,
+                  symbolHeight: 280
+              },
+              tooltip: {
+                  formatter: function () {
+                      return '<b>' + this.series.xAxis.categories[this.point.x] + '</b><br><b>' +
+                          this.point.value + '</b> items on <br><b>' + this.series.yAxis.categories[this.point.y] + '</b>';
+                  }
+            },
+         };
+            
+
+         $.get('movies.csv', function(data) {
+
+            var parsedData = $.csv.toArrays(data);
+            var genre = ['Drama','Biography','Animation','Crime','Comedy','Thriller','Adventure','Romance'];
+            var years=[2007, 2008, 2009, 2010, 2011];
+
+            var series = { 
+               data: [],
+               borderWidth:1,
+                  dataLabels: {
+                     enabled: true,
+                      color: '#000000'
+                  }
+            };
+         
+            for (var i = years.length - 1; i >= 0; i--) {            
+               for (var j = genre.length - 1; j >= 0; j--) {
+                  var temp= [];
+                  temp.push(parseFloat(i));
+                  temp.push(parseFloat(j));
+
+                  var sum =0;
+                  for (var d = parsedData.length - 1; d >= 0; d--) {
+                     if (parsedData[d][8]==String(genre[j]) && parsedData[d][11]==parseFloat(years[i])){
+                        if (parsedData[d][22]){
+                           sum += parseFloat(parsedData[d][22]);
+                        }
+                     }
+                  }
+                  temp.push(parseFloat(sum));
+                  series.data.push(temp);
+                  sum =0;
+               };
+            };
+
+            options.series.push(series);
+
+            var chart = new Highcharts.Chart(options);
+         });
+         
+      });
+
+   </script>
+   <div id="container" style="height: 800px; min-width: 310px; max-width: 800px; margin: 0 auto"></div>
+
+   
+</body>
+</html>
+
