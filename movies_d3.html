@@ -42,8 +42,8 @@
                 .sort(comparator);
     }
 
-    var lucro_liquido_ordem_crescente = function (a, b) { 
-        return (a.Worldwide_Gross_M-a.Budget_M) < (b.Worldwide_Gross_M-b.Budget_M)?-1:1;
+    var lucro_liquido_ordem_decrescente = function (a, b) { 
+        return (a.Worldwide_Gross_M-a.Budget_M) > (b.Worldwide_Gross_M-b.Budget_M)?-1:1;
     };
 
     var Worldwide_Gross_M_ordem_decrescente = function (a, b) { 
@@ -72,7 +72,7 @@
               );
         render( "#chart3",
                 json,
-                lucro_liquido_ordem_crescente,
+                lucro_liquido_ordem_decrescente,
                 "darkorange",
                 "Worldwide_Gross_M-d.Budget_M",
                 0.35
